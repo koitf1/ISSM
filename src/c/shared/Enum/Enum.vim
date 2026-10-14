@@ -220,6 +220,7 @@ syn keyword cConstant FlowequationIsSIAEnum
 syn keyword cConstant FlowequationIsSSAEnum
 syn keyword cConstant FlowequationIsNitscheEnum
 syn keyword cConstant FeFSNitscheGammaEnum
+syn keyword cConstant FrictionAlphaEnum
 syn keyword cConstant FrictionCouplingEnum
 syn keyword cConstant FrictionDeltaEnum
 syn keyword cConstant FrictionDNNEnum
@@ -230,6 +231,7 @@ syn keyword cConstant FrictionDNNOutputScaleEnum
 syn keyword cConstant FrictionEffectivePressureLimitEnum
 syn keyword cConstant FrictionFEnum
 syn keyword cConstant FrictionGammaEnum
+syn keyword cConstant FrictionLambdaEnum
 syn keyword cConstant FrictionLawEnum
 syn keyword cConstant FrictionLinearizeEnum
 syn keyword cConstant FrictionMaxCoefficientEnum
@@ -237,6 +239,7 @@ syn keyword cConstant FrictionPseudoplasticityExponentEnum
 syn keyword cConstant FrictionU0Enum
 syn keyword cConstant FrictionThresholdSpeedEnum
 syn keyword cConstant FrictionVoidRatioEnum
+syn keyword cConstant FrictionZetaEnum
 syn keyword cConstant FrontalForcingsBasinIcefrontAreaEnum
 syn keyword cConstant FrontalForcingsARMATimestepEnum
 syn keyword cConstant FrontalForcingsARMAarOrderEnum
@@ -962,13 +965,17 @@ syn keyword cConstant FrictionCEnum
 syn keyword cConstant FrictionCmaxEnum
 syn keyword cConstant FrictionCoefficientEnum
 syn keyword cConstant FrictionCoefficientcoulombEnum
+syn keyword cConstant FrictionBumpHeightEnum
+syn keyword cConstant FrictionBumpSpacingEnum
 syn keyword cConstant FrictionEffectivePressureEnum
 syn keyword cConstant FrictionKEnum
 syn keyword cConstant FrictionMEnum
 syn keyword cConstant FrictionPEnum
 syn keyword cConstant FrictionPressureAdjustedTemperatureEnum
 syn keyword cConstant FrictionQEnum
+syn keyword cConstant FrictionRheologyAEnum
 syn keyword cConstant FrictionSedimentCompressibilityCoefficientEnum
+syn keyword cConstant FrictionSheetThicknessEnum
 syn keyword cConstant FrictionTillFrictionAngleEnum
 syn keyword cConstant FrictionWaterLayerEnum
 syn keyword cConstant FrictionWaterPressureEnum

@@ -164,6 +164,12 @@ void Friction::GetAlphaComplement(IssmDouble* palpha_complement, Gauss* gauss){/
 			case 14:
 				GetAlphaRegCoulombComplement(palpha_complement,gauss);
 				break;
+			case 16:
+				GetAlphaHydrologySchoofComplement(palpha_complement,gauss);
+				break;
+			case 17:
+				GetAlphaLinCombComplement(palpha_complement,gauss);
+				break;
 			default:
 				_error_("not supported");
 		}
@@ -321,6 +327,89 @@ void Friction::GetAlphaSchoofComplement(IssmDouble* palpha_complement, Gauss* ga
 	/*Assign output pointers:*/
 	*palpha_complement=alpha_complement;
 }/*}}}*/
+void Friction::GetAlphaHydrologySchoofComplement(IssmDouble* palpha_complement, Gauss* gauss){/*{{{*/
+	/* Compute the complement of Schoof's law for inversion
+	 * d alpha2                                                                                                          h_r
+	 * -------- = |u_b|^(m-1) /(1+ (zeta)^(1/m) A l_r tildeh/(h_r - tildeh))^(m), tildeh = lambda h + (1-lambda) --------------------, 
+	 *  dC                                                                                                        1 + A l_r N^n/u_b
+	*/
+	/*diverse: */
+	IssmDouble  C,m,zeta,hr,lr,A,B;
+	IssmDouble  alpha_complement;
+
+	/*Recover parameters: */
+	int coupled_flag;
+	element->parameters->FindParam(&coupled_flag,FrictionCouplingEnum);
+	element->GetInputValue(&m,gauss,FrictionMEnum);
+	zeta = element->FindParam(FrictionZetaEnum);
+	if(coupled_flag == 3){
+		element->GetInputValue(&hr,gauss,FrictionBumpHeightEnum);
+		element->GetInputValue(&lr,gauss,FrictionBumpSpacingEnum);
+		element->GetInputValue(&A,gauss,FrictionRheologyAEnum);
+	}else if(coupled_flag == 4){
+		element->GetInputValue(&hr,gauss,HydrologyBumpHeightEnum);
+		lr = element->FindParam(HydrologyCavitySpacingEnum);
+		element->GetInputValue(&B,gauss,HydrologyRheologyBBaseEnum);
+		A = 2.*pow(B,-1./m)/pow(1./m,1./m);
+	}else{
+		_error_("coupling not supported");
+	}
+
+
+	/*Get effective pressure*/
+	IssmDouble tildeh = SheetThickness(gauss);
+	IssmDouble vmag = VelMag(gauss);
+	/*Check to prevent dividing by zero if vmag==0*/
+	if(zeta == 0.) {
+		alpha_complement = pow(vmag, m-1);
+	}
+	else if((vmag==0.) || (tildeh >= hr)) {
+		alpha_complement=0.;
+	}
+	else {
+		alpha_complement= pow(vmag, m-1)*pow((1 + pow(zeta,1./m)*A*lr*tildeh/(hr-tildeh)), -m);
+	}
+	/*Assign output pointers:*/
+	*palpha_complement=alpha_complement;
+}/*}}}*/
+void Friction::GetAlphaLinCombComplement(IssmDouble* palpha_complement, Gauss* gauss){/*{{{*/
+	/* Compute the complement of linear combination law for inversion
+	 *                                1  
+	 * alpha_complement= ub ^(m-1) --------
+	 *                              1 + xi   */
+
+	/*diverse: */
+	IssmDouble  m,alph,hr,lr,A,B;
+	IssmDouble  alpha_complement;
+
+	/*Recover parameters: */
+	int coupled_flag;
+	element->parameters->FindParam(&coupled_flag,FrictionCouplingEnum);
+	element->GetInputValue(&m,gauss,FrictionMEnum);
+	element->parameters->FindParam(&alph,FrictionAlphaEnum);
+	if(coupled_flag == 3){
+		element->GetInputValue(&hr,gauss,FrictionBumpHeightEnum);
+		element->GetInputValue(&lr,gauss,FrictionBumpSpacingEnum);
+		element->GetInputValue(&A,gauss,FrictionRheologyAEnum);
+	}else if(coupled_flag == 4){
+		element->GetInputValue(&hr,gauss,HydrologyBumpHeightEnum);
+		lr = element->FindParam(HydrologyCavitySpacingEnum);
+		element->GetInputValue(&B,gauss,HydrologyRheologyBBaseEnum);
+		A = 2.*pow(B,-1./m)/pow(1./m,1./m);
+	}else{
+		_error_("coupling not supported");
+	}
+
+	/*Get effective pressure*/
+	IssmDouble tildeh = SheetThickness(gauss);
+	IssmDouble vmag = VelMag(gauss);
+
+	if(vmag==0. && (m-1.)<0.) alpha_complement=0.;
+	else alpha_complement=pow(1+alph*A*lr*tildeh/(hr-tildeh),-1)*pow(vmag,(m-1.));
+
+	/*Assign output pointers:*/
+	*palpha_complement=alpha_complement;
+}/*}}}*/
 void Friction::GetAlphaWeertmanComplement(IssmDouble* palpha_complement, Gauss* gauss){/*{{{*/
 
 	/* Compute the complement of Weertman's law for inversion
@@ -454,6 +543,12 @@ void Friction::GetAlpha2(IssmDouble* palpha2, Gauss* gauss){/*{{{*/
 				break;
 			case 15:
 				GetAlpha2RegCoulomb2(palpha2,gauss);
+				break;
+			case 16:
+				GetAlpha2HydrologySchoof(palpha2,gauss);
+				break;
+			case 17:
+				GetAlpha2LinComb(palpha2,gauss);
 				break;
 			#ifdef _HAVE_PyBind11_
 			case 20:
@@ -1103,6 +1198,118 @@ void Friction::GetAlpha2RegCoulomb2(IssmDouble* palpha2, Gauss* gauss){/*{{{*/
 	/*Assign output pointers:*/
 	*palpha2=alpha2;
 }/*}}}*/
+void Friction::GetAlpha2HydrologySchoof(IssmDouble* palpha2, Gauss* gauss){/*{{{*/
+
+	/*This routine calculates the basal friction coefficient
+	 *
+	 *                            C^2 |u_b|^(m-1)
+	 * alpha2=  -  _____________________________________________
+	 *             (1+(zeta)^1/m A l_r tildeh / (hr-tildeh) )^m
+	 *
+	 * */
+
+	/*diverse: */
+	IssmDouble  C,m,zeta,hr,lr,A,B,ub,tildeh,p_ice,Neff_limit;
+	IssmDouble  alpha_complement,alpha2;
+
+	/*Effective pressure limit*/
+	element->parameters->FindParam(&Neff_limit,FrictionEffectivePressureLimitEnum);
+		
+	/*Compute ice pressure*/
+	p_ice = IcePressure(gauss);
+
+	/*Recover parameters: */
+	int coupled_flag;
+	element->parameters->FindParam(&coupled_flag,FrictionCouplingEnum);
+	element->GetInputValue(&m,gauss,FrictionMEnum);
+	zeta = element->FindParam(FrictionZetaEnum);
+	element->GetInputValue(&C,gauss,FrictionCEnum);
+	if(coupled_flag == 3){
+		element->GetInputValue(&A,gauss,FrictionRheologyAEnum);
+		element->GetInputValue(&hr,gauss,FrictionBumpHeightEnum);
+		element->GetInputValue(&lr,gauss,FrictionBumpSpacingEnum);
+	}else if(coupled_flag == 4){
+		element->GetInputValue(&B,gauss,HydrologyRheologyBBaseEnum);
+		element->GetInputValue(&hr,gauss,HydrologyBumpHeightEnum);
+		lr = element->FindParam(HydrologyCavitySpacingEnum);
+		A = pow(B,-1./m)*2./pow(1./m,1./m);
+	}else{
+		_error_("coupling not supported");
+	}
+
+	/*Get effective pressure*/
+	tildeh = SheetThickness(gauss);
+	ub = VelMag(gauss);
+
+	/*Compute alpha^2*/
+	if(zeta == 0.){
+		alpha2= (C*C*pow(ub,m-1.));
+	}
+	else if((ub<1e-10) ||(tildeh>=hr)){
+		alpha2 = 0.;
+	}
+	else{
+		alpha2= C*C*pow(ub,m-1.) / pow(1.+pow(zeta,1./m)*A*lr*tildeh/(hr-tildeh),m);
+	}
+	
+	/*Assign output pointers:*/
+	*palpha2=alpha2;
+}/*}}}*/
+void Friction::GetAlpha2LinComb(IssmDouble* palpha2, Gauss* gauss){/*{{{*/
+
+
+	/*This routine calculates the basal friction coefficient
+	 *
+	 *                    xi      1                       1                        tildeh                                          h_r
+	 * alpha2 =  Cmax N ______  _____ + C^2 |u_b|^(m-1) _____, xi = alpha A l_r  __________ , tildeh = lambda h + (1-lambda) ________________
+	 *                   1+xi   |u_b|                    1+xi                    h_r-tildeh                                  1+A l_r N^n/u_b
+	 *
+	 * */
+
+	/*diverse: */
+	IssmDouble  m,alph,hr,lr,A,B,tildeN,xi,Cmax,C;
+	IssmDouble  alpha_complement,alpha2;
+
+	/*Recover parameters: */
+	int coupled_flag;
+	element->parameters->FindParam(&coupled_flag,FrictionCouplingEnum);
+	element->GetInputValue(&m,gauss,FrictionMEnum);
+	element->parameters->FindParam(&alph,FrictionAlphaEnum);
+	element->GetInputValue(&C,gauss,FrictionCEnum);
+	element->GetInputValue(&Cmax,gauss,FrictionCmaxEnum);
+	if(coupled_flag == 3){
+		element->GetInputValue(&hr,gauss,FrictionBumpHeightEnum);
+		element->GetInputValue(&lr,gauss,FrictionBumpSpacingEnum);
+		element->GetInputValue(&A,gauss,FrictionRheologyAEnum);
+	}else if(coupled_flag == 4){
+		element->GetInputValue(&hr,gauss,HydrologyBumpHeightEnum);
+		lr = element->FindParam(HydrologyCavitySpacingEnum);
+		element->GetInputValue(&B,gauss,HydrologyRheologyBBaseEnum);
+		A = 2.*pow(B,-1./m)/pow(1./m,1./m);
+	}else{
+		_error_("coupling not supported");
+	}
+
+	/*Get effective pressure*/
+	IssmDouble tildeh = SheetThickness(gauss);
+	IssmDouble ub = VelMag(gauss);
+	tildeN = pow(ub*(hr-tildeh)/A/lr/tildeh,m);
+	
+	/*Compute alpha^2*/
+	if(ub<1e-10) {
+		alpha2 = 0;
+	}
+	else if(tildeh>=hr){
+		alpha2 = 0;
+	}
+	else{
+		xi = alph*A*lr*tildeh/(hr-tildeh);
+		alpha2 = Cmax*tildeN*(xi/(1+xi))/ub + pow(C,2)*pow(ub,m-1)/(1+xi);
+	}
+	
+	/*Assign output pointers:*/
+	*palpha2=alpha2;
+}/*}}}*/
 #if _HAVE_PyBind11_
 void Friction::GetAlpha2Emulator(IssmDouble* palpha2, Gauss* gauss){/*{{{*/
 	IssmDouble C;
@@ -1259,6 +1466,88 @@ IssmDouble Friction::SubglacialWaterPressure(Gauss* gauss){/*{{{*/
 
 	/*Return water pressure*/
 	return p_water;
+
+}/*}}}*/
+IssmDouble Friction::SheetThickness(Gauss* gauss){/*{{{*/
+	/*Get effective pressure as a function of  flag */
+
+	/*diverse: */
+	int         coupled_flag;
+	int         frictionlaw;
+	bool        isnofrictiononlake;
+	IssmDouble  thickness,base,sealevel;
+	IssmDouble  p_ice,p_water;
+	IssmDouble  Neff,Neff_limit,h,h_limit,hr,htilde,hN,Nh,lambda,A,lr,ub,m,B;
+	/*Recover parameters: */
+	element->parameters->FindParam(&coupled_flag,FrictionCouplingEnum);
+	element->parameters->FindParam(&frictionlaw,FrictionLawEnum);
+	
+	/* only implemented for hydrology-modified Schoof and linear combination laws*/
+	if(frictionlaw != 16 && frictionlaw != 17) _error_("friction law not supported\n");
+	
+	/*Effective pressure limit*/
+	element->parameters->FindParam(&Neff_limit,FrictionEffectivePressureLimitEnum);
+		
+	/*Compute ice pressure*/
+	p_ice = IcePressure(gauss);
+
+	/*get sheet thickness*/
+	switch(coupled_flag){
+		case 0:{
+			_error_("coupling not supported, use 3 or 4");
+			
+		}
+			break;
+		case 1:{
+			_error_("coupling not supported, use 3 or 4");
+		}
+			break;
+		case 2:{
+			_error_("coupling not supported, use 3 or 4");
+		}
+			break;
+		case 3:{
+			element->GetInputValue(&h,gauss,FrictionSheetThicknessEnum);
+			element->GetInputValue(&Neff,gauss,FrictionEffectivePressureEnum);
+			lambda = element->FindParam(FrictionLambdaEnum);
+			element->GetInputValue(&A,gauss,FrictionRheologyAEnum);
+			element->GetInputValue(&hr,gauss,FrictionBumpHeightEnum);
+			element->GetInputValue(&lr,gauss,FrictionBumpSpacingEnum);
+			element->GetInputValue(&m,gauss,FrictionMEnum);
+			ub = VelMag(gauss);
+			ub = max(ub,1.E-24);
+			Nh = pow(ub*(hr-h)/A/lr/h,m);
+			Nh = max(Nh,p_ice*Neff_limit);
+			Neff = max(Neff,p_ice*Neff_limit);
+			h = hr/(1.+lr*A*pow(Nh,1./m)/ub);
+			hN = hr/(1.+lr*A*pow(Neff,1./m)/ub);
+			htilde = lambda*h + (1.-lambda)*hN;
+		}
+			break;
+		case 4:{
+			element->GetInputValue(&h,gauss,HydrologySheetThicknessEnum);
+			element->GetInputValue(&Neff,gauss,EffectivePressureEnum);
+			lambda = element->FindParam(FrictionLambdaEnum);
+			element->GetInputValue(&B,gauss,HydrologyRheologyBBaseEnum);
+			element->GetInputValue(&hr,gauss,HydrologyBumpHeightEnum);
+			lr = element->FindParam(HydrologyCavitySpacingEnum);
+			element->GetInputValue(&m,gauss,FrictionMEnum);
+			A = pow(B,-1./m)*2./pow(1./m,1./m);
+			ub = VelMag(gauss);
+			ub = max(ub,1.E-24);
+			Nh = pow(ub*(hr-h)/A/lr/h,m);
+			Nh = max(Nh,p_ice*Neff_limit);
+			Neff = max(Neff,p_ice*Neff_limit);
+			h = hr/(1.+lr*A*pow(Nh,1./m)/ub);
+			hN = hr/(1.+lr*A*pow(Neff,1./m)/ub);
+			htilde = lambda*h + (1.-lambda)*hN;
+		}
+			break;
+		default:
+			_error_("not supported");
+	}
+	/*Return sheet thickness*/
+	return htilde;
 
 }/*}}}*/
 IssmDouble Friction::VelMag(Gauss* gauss){/*{{{*/
@@ -1429,6 +1718,41 @@ void FrictionUpdateInputs(Elements* elements,Inputs* inputs,IoModel* iomodel){/*
 			iomodel->FetchDataToInput(inputs,elements,"md.friction.m",FrictionMEnum);
 			iomodel->FetchDataToInput(inputs,elements,"md.friction.K",FrictionKEnum);
 			break;
+		case 16:
+			iomodel->FindConstant(&frictioncoupling,"md.friction.coupling");
+			iomodel->FetchDataToInput(inputs,elements,"md.friction.m",FrictionMEnum);
+			iomodel->FetchDataToInput(inputs,elements,"md.friction.C",FrictionCEnum);
+			iomodel->FetchDataToInput(inputs,elements,"md.friction.rheology_A",FrictionRheologyAEnum);
+			iomodel->FetchDataToInput(inputs,elements,"md.friction.bump_height",FrictionBumpHeightEnum);
+			iomodel->FetchDataToInput(inputs,elements,"md.friction.bump_spacing",FrictionBumpSpacingEnum);
+			if(frictioncoupling==3){
+				iomodel->FetchDataToInput(inputs,elements,"md.friction.effective_pressure",FrictionEffectivePressureEnum);
+				iomodel->FetchDataToInput(inputs,elements,"md.friction.sheet_thickness",FrictionSheetThicknessEnum);
+			}else if(frictioncoupling==4){
+				iomodel->FetchDataToInput(inputs,elements,"md.friction.effective_pressure",EffectivePressureEnum);
+				iomodel->FetchDataToInput(inputs,elements,"md.initialization.watercolumn",HydrologySheetThicknessEnum);
+				iomodel->FetchDataToInput(inputs,elements,"md.hydrology.rheology_B_base",HydrologyRheologyBBaseEnum);
+				iomodel->FetchDataToInput(inputs,elements,"md.hydrology.bump_height",HydrologyBumpHeightEnum);
+			}
+			break;
+		case 17:
+			iomodel->FindConstant(&frictioncoupling,"md.friction.coupling");
+			iomodel->FetchDataToInput(inputs,elements,"md.friction.m",FrictionMEnum);
+			iomodel->FetchDataToInput(inputs,elements,"md.friction.C",FrictionCEnum);
+			iomodel->FetchDataToInput(inputs,elements,"md.friction.Cmax",FrictionCmaxEnum);
+			iomodel->FetchDataToInput(inputs,elements,"md.friction.rheology_A",FrictionRheologyAEnum);
+			iomodel->FetchDataToInput(inputs,elements,"md.friction.bump_height",FrictionBumpHeightEnum);
+			iomodel->FetchDataToInput(inputs,elements,"md.friction.bump_spacing",FrictionBumpSpacingEnum);
+			if(frictioncoupling==3){
+				iomodel->FetchDataToInput(inputs,elements,"md.friction.effective_pressure",FrictionEffectivePressureEnum);
+				iomodel->FetchDataToInput(inputs,elements,"md.friction.sheet_thickness",FrictionSheetThicknessEnum);
+			}else if(frictioncoupling==4){
+				iomodel->FetchDataToInput(inputs,elements,"md.friction.effective_pressure",EffectivePressureEnum);
+				iomodel->FetchDataToInput(inputs,elements,"md.initialization.watercolumn",HydrologySheetThicknessEnum);
+				iomodel->FetchDataToInput(inputs,elements,"md.hydrology.rheology_B_base",HydrologyRheologyBBaseEnum);
+				iomodel->FetchDataToInput(inputs,elements,"md.hydrology.bump_height",HydrologyBumpHeightEnum);
+			}
+			break;
 		#ifdef _HAVE_PyBind11_
 		case 20:
 			iomodel->FetchDataToInput(inputs,elements,"md.friction.C",FrictionCEnum);
@@ -1447,6 +1771,7 @@ void FrictionUpdateParameters(Parameters* parameters,IoModel* iomodel){/*{{{*/
 	parameters->AddObject(new IntParam(FrictionLinearizeEnum,0));
 
 	int frictionlaw;
+	int frictioncoupling;
 	iomodel->FindConstant(&frictionlaw,"md.friction.law");
 	switch(frictionlaw){
 		case 1: /*friction*/
@@ -1511,6 +1836,24 @@ void FrictionUpdateParameters(Parameters* parameters,IoModel* iomodel){/*{{{*/
 		case 15:
 			parameters->AddObject(new IntParam(FrictionCouplingEnum,2));
 			parameters->AddObject(iomodel->CopyConstantObject("md.friction.effective_pressure_limit",FrictionEffectivePressureLimitEnum));
+			break;
+		case 16:
+			iomodel->FindConstant(&frictioncoupling,"md.friction.coupling");
+			parameters->AddObject(iomodel->CopyConstantObject("md.friction.coupling",FrictionCouplingEnum));
+			parameters->AddObject(iomodel->CopyConstantObject("md.friction.effective_pressure_limit",FrictionEffectivePressureLimitEnum));
+			parameters->AddObject(iomodel->CopyConstantObject("md.friction.lambd",FrictionLambdaEnum));
+			parameters->AddObject(iomodel->CopyConstantObject("md.friction.zeta",FrictionZetaEnum));
+			if(frictioncoupling==4) parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.cavity_spacing",HydrologyCavitySpacingEnum));
+			break;
+		case 17:
+			iomodel->FindConstant(&frictioncoupling,"md.friction.coupling");
+			parameters->AddObject(iomodel->CopyConstantObject("md.friction.coupling",FrictionCouplingEnum));
+			parameters->AddObject(iomodel->CopyConstantObject("md.friction.effective_pressure_limit",FrictionEffectivePressureLimitEnum));
+			parameters->AddObject(iomodel->CopyConstantObject("md.friction.lambd",FrictionLambdaEnum));
+			parameters->AddObject(iomodel->CopyConstantObject("md.friction.alpha",FrictionAlphaEnum));
+			if(frictioncoupling==4){
+				parameters->AddObject(iomodel->CopyConstantObject("md.hydrology.cavity_spacing",HydrologyCavitySpacingEnum));
+			}
 			break;
 		#ifdef _HAVE_PyBind11_
 		case 20:{

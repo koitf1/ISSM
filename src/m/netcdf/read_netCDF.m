@@ -135,20 +135,22 @@ function md  = instantiate_subclass(md, gname, gid, verbose) % {{{
 			end
 		case 'friction'
 			switch ct
-				case 'friction',              md.friction = friction();
-				case 'frictioncoulomb',       md.friction = frictioncoulomb();
-				case 'frictioncoulomb2',      md.friction = frictioncoulomb2();
-				case 'frictionhydro',         md.friction = frictionhydro();
-				case 'frictionjosh',          md.friction = frictionjosh();
-				case 'frictionpism',          md.friction = frictionpism();
-				case 'frictionregcoulomb',    md.friction = frictionregcoulomb();
-				case 'frictionregcoulomb2',   md.friction = frictionregcoulomb2();
-				case 'frictionschoof',        md.friction = frictionschoof();
-				case 'frictionshakti',        md.friction = frictionshakti();
-				case 'frictiontsai',          md.friction = frictiontsai();
-				case 'frictionwaterlayer',    md.friction = frictionwaterlayer();
-				case 'frictionweertman',      md.friction = frictionweertman();
-				case 'frictionweertmantemp',  md.friction = frictionweertmantemp();
+				case 'friction',                md.friction = friction();
+				case 'frictioncoulomb',         md.friction = frictioncoulomb();
+				case 'frictioncoulomb2',        md.friction = frictioncoulomb2();
+				case 'frictionhydro',           md.friction = frictionhydro();
+				case 'frictionjosh',            md.friction = frictionjosh();
+				case 'frictionpism',            md.friction = frictionpism();
+				case 'frictionregcoulomb',      md.friction = frictionregcoulomb();
+				case 'frictionregcoulomb2',     md.friction = frictionregcoulomb2();
+				case 'frictionschoof',          md.friction = frictionschoof();
+				case 'frictionhydrologyschoof', md.friction = frictionhydrologyschoof();
+				case 'frictionlincomb',         md.friction = frictionlincomb();
+				case 'frictionshakti',          md.friction = frictionshakti();
+				case 'frictiontsai',            md.friction = frictiontsai();
+				case 'frictionwaterlayer',      md.friction = frictionwaterlayer();
+				case 'frictionweertman',        md.friction = frictionweertman();
+				case 'frictionweertmantemp',    md.friction = frictionweertmantemp();
 				otherwise, warning(['friction class ''' ct ''' not supported yet']);
 			end
 		case 'hydrology'

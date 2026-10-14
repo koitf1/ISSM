@@ -213,6 +213,7 @@ syn keyword juliaConstC FlowequationIsSIAEnum
 syn keyword juliaConstC FlowequationIsSSAEnum
 syn keyword juliaConstC FlowequationIsNitscheEnum
 syn keyword juliaConstC FeFSNitscheGammaEnum
+syn keyword juliaConstC FrictionAlphaEnum
 syn keyword juliaConstC FrictionCouplingEnum
 syn keyword juliaConstC FrictionDeltaEnum
 syn keyword juliaConstC FrictionDNNEnum
@@ -223,6 +224,7 @@ syn keyword juliaConstC FrictionDNNOutputScaleEnum
 syn keyword juliaConstC FrictionEffectivePressureLimitEnum
 syn keyword juliaConstC FrictionFEnum
 syn keyword juliaConstC FrictionGammaEnum
+syn keyword juliaConstC FrictionLambdaEnum
 syn keyword juliaConstC FrictionLawEnum
 syn keyword juliaConstC FrictionLinearizeEnum
 syn keyword juliaConstC FrictionMaxCoefficientEnum
@@ -230,6 +232,7 @@ syn keyword juliaConstC FrictionPseudoplasticityExponentEnum
 syn keyword juliaConstC FrictionU0Enum
 syn keyword juliaConstC FrictionThresholdSpeedEnum
 syn keyword juliaConstC FrictionVoidRatioEnum
+syn keyword juliaConstC FrictionZetaEnum
 syn keyword juliaConstC FrontalForcingsBasinIcefrontAreaEnum
 syn keyword juliaConstC FrontalForcingsARMATimestepEnum
 syn keyword juliaConstC FrontalForcingsARMAarOrderEnum
@@ -955,13 +958,17 @@ syn keyword juliaConstC FrictionCEnum
 syn keyword juliaConstC FrictionCmaxEnum
 syn keyword juliaConstC FrictionCoefficientEnum
 syn keyword juliaConstC FrictionCoefficientcoulombEnum
+syn keyword juliaConstC FrictionBumpHeightEnum
+syn keyword juliaConstC FrictionBumpSpacingEnum
 syn keyword juliaConstC FrictionEffectivePressureEnum
 syn keyword juliaConstC FrictionKEnum
 syn keyword juliaConstC FrictionMEnum
 syn keyword juliaConstC FrictionPEnum
 syn keyword juliaConstC FrictionPressureAdjustedTemperatureEnum
 syn keyword juliaConstC FrictionQEnum
+syn keyword juliaConstC FrictionRheologyAEnum
 syn keyword juliaConstC FrictionSedimentCompressibilityCoefficientEnum
+syn keyword juliaConstC FrictionSheetThicknessEnum
 syn keyword juliaConstC FrictionTillFrictionAngleEnum
 syn keyword juliaConstC FrictionWaterLayerEnum
 syn keyword juliaConstC FrictionWaterPressureEnum

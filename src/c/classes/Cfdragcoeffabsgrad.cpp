@@ -175,6 +175,8 @@ IssmDouble Cfdragcoeffabsgrad::Cfdragcoeffabsgrad_Calculation(Element* element){
 		case 11:
 		case 14:
 		case 15:
+		case 16:
+		case 17:
 			drag_input = basalelement->GetInput(FrictionCEnum); _assert_(drag_input);
 			break;
 		default:

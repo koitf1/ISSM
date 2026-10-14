@@ -167,13 +167,17 @@
 %FrictionCmax
 %FrictionCoefficient
 %FrictionCoefficientcoulomb
+%FrictionBumpHeight
+%FrictionBumpSpacing
 %FrictionEffectivePressure
 %FrictionK
 %FrictionM
 %FrictionP
 %FrictionPressureAdjustedTemperature
 %FrictionQ
+%FrictionRheologyA
 %FrictionSedimentCompressibilityCoefficient
+%FrictionSheetThickness
 %FrictionTillFrictionAngle
 %FrictionWaterLayer
 %FrictionWaterPressure

@@ -52,6 +52,8 @@ class Friction{
 		void  GetAlphaTempComplement(IssmDouble* alpha_complement,Gauss* gauss);
 		void  GetAlphaBuddComplement(IssmDouble* alpha_complement,Gauss* gauss);
 		void  GetAlphaSchoofComplement(IssmDouble* alpha_complement,Gauss* gauss);
+		void  GetAlphaHydrologySchoofComplement(IssmDouble* alpha_complement,Gauss* gauss);
+		void  GetAlphaLinCombComplement(IssmDouble* alpha_complement,Gauss* gauss);
 		void  GetAlphaCoulomb2Complement(IssmDouble* alpha_complement,Gauss* gauss);
 		void  GetAlphaRegCoulombComplement(IssmDouble* alpha_complement,Gauss* gauss);
 		void  GetAlphaWeertmanComplement(IssmDouble* alpha_complement,Gauss* gauss);
@@ -68,6 +70,8 @@ class Friction{
 		void  GetAlpha2WeertmanTemp(IssmDouble* palpha2,Gauss* gauss);
 		void  GetAlpha2PISM(IssmDouble* palpha2,Gauss* gauss);
 		void  GetAlpha2Schoof(IssmDouble* palpha2,Gauss* gauss);
+		void  GetAlpha2HydrologySchoof(IssmDouble* palpha2,Gauss* gauss);
+		void  GetAlpha2LinComb(IssmDouble* palpha2,Gauss* gauss);
 		void  GetAlpha2RegCoulomb(IssmDouble* palpha2,Gauss* gauss);
 		void  GetAlpha2RegCoulomb2(IssmDouble* palpha2,Gauss* gauss);
 		void  GetAlpha2Tsai(IssmDouble* palpha2,Gauss* gauss);
@@ -77,6 +81,7 @@ class Friction{
 
 		IssmDouble EffectivePressure(Gauss* gauss);
 		IssmDouble IcePressure(Gauss* gauss);
+		IssmDouble SheetThickness(Gauss* gauss);
 		IssmDouble SubglacialWaterPressure(Gauss* gauss);
 		IssmDouble VelMag(Gauss* gauss);
 		void GetBasalSlidingSpeeds(IssmDouble* pvx, Gauss* gauss);

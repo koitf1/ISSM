@@ -222,6 +222,7 @@ const char* EnumToStringx(int en){
 		case FlowequationIsSSAEnum : return "FlowequationIsSSA";
 		case FlowequationIsNitscheEnum : return "FlowequationIsNitsche";
 		case FeFSNitscheGammaEnum : return "FeFSNitscheGamma";
+		case FrictionAlphaEnum : return "FrictionAlpha";
 		case FrictionCouplingEnum : return "FrictionCoupling";
 		case FrictionDeltaEnum : return "FrictionDelta";
 		case FrictionDNNEnum : return "FrictionDNN";
@@ -232,6 +233,7 @@ const char* EnumToStringx(int en){
 		case FrictionEffectivePressureLimitEnum : return "FrictionEffectivePressureLimit";
 		case FrictionFEnum : return "FrictionF";
 		case FrictionGammaEnum : return "FrictionGamma";
+		case FrictionLambdaEnum : return "FrictionLambda";
 		case FrictionLawEnum : return "FrictionLaw";
 		case FrictionLinearizeEnum : return "FrictionLinearize";
 		case FrictionMaxCoefficientEnum : return "FrictionMaxCoefficient";
@@ -239,6 +241,7 @@ const char* EnumToStringx(int en){
 		case FrictionU0Enum : return "FrictionU0";
 		case FrictionThresholdSpeedEnum : return "FrictionThresholdSpeed";
 		case FrictionVoidRatioEnum : return "FrictionVoidRatio";
+		case FrictionZetaEnum : return "FrictionZeta";
 		case FrontalForcingsBasinIcefrontAreaEnum : return "FrontalForcingsBasinIcefrontArea";
 		case FrontalForcingsARMATimestepEnum : return "FrontalForcingsARMATimestep";
 		case FrontalForcingsARMAarOrderEnum : return "FrontalForcingsARMAarOrder";
@@ -964,13 +967,17 @@ const char* EnumToStringx(int en){
 		case FrictionCmaxEnum : return "FrictionCmax";
 		case FrictionCoefficientEnum : return "FrictionCoefficient";
 		case FrictionCoefficientcoulombEnum : return "FrictionCoefficientcoulomb";
+		case FrictionBumpHeightEnum : return "FrictionBumpHeight";
+		case FrictionBumpSpacingEnum : return "FrictionBumpSpacing";
 		case FrictionEffectivePressureEnum : return "FrictionEffectivePressure";
 		case FrictionKEnum : return "FrictionK";
 		case FrictionMEnum : return "FrictionM";
 		case FrictionPEnum : return "FrictionP";
 		case FrictionPressureAdjustedTemperatureEnum : return "FrictionPressureAdjustedTemperature";
 		case FrictionQEnum : return "FrictionQ";
+		case FrictionRheologyAEnum : return "FrictionRheologyA";
 		case FrictionSedimentCompressibilityCoefficientEnum : return "FrictionSedimentCompressibilityCoefficient";
+		case FrictionSheetThicknessEnum : return "FrictionSheetThickness";
 		case FrictionTillFrictionAngleEnum : return "FrictionTillFrictionAngle";
 		case FrictionWaterLayerEnum : return "FrictionWaterLayer";
 		case FrictionWaterPressureEnum : return "FrictionWaterPressure";

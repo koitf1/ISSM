@@ -209,6 +209,7 @@
 	FlowequationIsSSAEnum
 	FlowequationIsNitscheEnum
 	FeFSNitscheGammaEnum
+	FrictionAlphaEnum
 	FrictionCouplingEnum
 	FrictionDeltaEnum
 	FrictionDNNEnum
@@ -219,6 +220,7 @@
 	FrictionEffectivePressureLimitEnum
 	FrictionFEnum
 	FrictionGammaEnum
+	FrictionLambdaEnum
 	FrictionLawEnum
 	FrictionLinearizeEnum
 	FrictionMaxCoefficientEnum
@@ -226,6 +228,7 @@
 	FrictionU0Enum
 	FrictionThresholdSpeedEnum
 	FrictionVoidRatioEnum
+	FrictionZetaEnum
 	FrontalForcingsBasinIcefrontAreaEnum
 	FrontalForcingsARMATimestepEnum
 	FrontalForcingsARMAarOrderEnum
@@ -951,13 +954,17 @@
 	FrictionCmaxEnum
 	FrictionCoefficientEnum
 	FrictionCoefficientcoulombEnum
+	FrictionBumpHeightEnum
+	FrictionBumpSpacingEnum
 	FrictionEffectivePressureEnum
 	FrictionKEnum
 	FrictionMEnum
 	FrictionPEnum
 	FrictionPressureAdjustedTemperatureEnum
 	FrictionQEnum
+	FrictionRheologyAEnum
 	FrictionSedimentCompressibilityCoefficientEnum
+	FrictionSheetThicknessEnum
 	FrictionTillFrictionAngleEnum
 	FrictionWaterLayerEnum
 	FrictionWaterPressureEnum
@@ -4106,6 +4113,7 @@ function EnumToString(enum::IssmEnum)
 	if(enum==FlowequationIsSSAEnum) return "FlowequationIsSSA" end
 	if(enum==FlowequationIsNitscheEnum) return "FlowequationIsNitsche" end
 	if(enum==FeFSNitscheGammaEnum) return "FeFSNitscheGamma" end
+	if(enum==FrictionAlphaEnum) return "FrictionAlpha" end
 	if(enum==FrictionCouplingEnum) return "FrictionCoupling" end
 	if(enum==FrictionDeltaEnum) return "FrictionDelta" end
 	if(enum==FrictionDNNEnum) return "FrictionDNN" end
@@ -4116,6 +4124,7 @@ function EnumToString(enum::IssmEnum)
 	if(enum==FrictionEffectivePressureLimitEnum) return "FrictionEffectivePressureLimit" end
 	if(enum==FrictionFEnum) return "FrictionF" end
 	if(enum==FrictionGammaEnum) return "FrictionGamma" end
+	if(enum==FrictionLambdaEnum) return "FrictionLambda" end
 	if(enum==FrictionLawEnum) return "FrictionLaw" end
 	if(enum==FrictionLinearizeEnum) return "FrictionLinearize" end
 	if(enum==FrictionMaxCoefficientEnum) return "FrictionMaxCoefficient" end
@@ -4123,6 +4132,7 @@ function EnumToString(enum::IssmEnum)
 	if(enum==FrictionU0Enum) return "FrictionU0" end
 	if(enum==FrictionThresholdSpeedEnum) return "FrictionThresholdSpeed" end
 	if(enum==FrictionVoidRatioEnum) return "FrictionVoidRatio" end
+	if(enum==FrictionZetaEnum) return "FrictionZeta" end
 	if(enum==FrontalForcingsBasinIcefrontAreaEnum) return "FrontalForcingsBasinIcefrontArea" end
 	if(enum==FrontalForcingsARMATimestepEnum) return "FrontalForcingsARMATimestep" end
 	if(enum==FrontalForcingsARMAarOrderEnum) return "FrontalForcingsARMAarOrder" end
@@ -4848,13 +4858,17 @@ function EnumToString(enum::IssmEnum)
 	if(enum==FrictionCmaxEnum) return "FrictionCmax" end
 	if(enum==FrictionCoefficientEnum) return "FrictionCoefficient" end
 	if(enum==FrictionCoefficientcoulombEnum) return "FrictionCoefficientcoulomb" end
+	if(enum==FrictionBumpHeightEnum) return "FrictionBumpHeight" end
+	if(enum==FrictionBumpSpacingEnum) return "FrictionBumpSpacing" end
 	if(enum==FrictionEffectivePressureEnum) return "FrictionEffectivePressure" end
 	if(enum==FrictionKEnum) return "FrictionK" end
 	if(enum==FrictionMEnum) return "FrictionM" end
 	if(enum==FrictionPEnum) return "FrictionP" end
 	if(enum==FrictionPressureAdjustedTemperatureEnum) return "FrictionPressureAdjustedTemperature" end
 	if(enum==FrictionQEnum) return "FrictionQ" end
+	if(enum==FrictionRheologyAEnum) return "FrictionRheologyA" end
 	if(enum==FrictionSedimentCompressibilityCoefficientEnum) return "FrictionSedimentCompressibilityCoefficient" end
+	if(enum==FrictionSheetThicknessEnum) return "FrictionSheetThickness" end
 	if(enum==FrictionTillFrictionAngleEnum) return "FrictionTillFrictionAngle" end
 	if(enum==FrictionWaterLayerEnum) return "FrictionWaterLayer" end
 	if(enum==FrictionWaterPressureEnum) return "FrictionWaterPressure" end
@@ -8003,6 +8017,7 @@ function StringToEnum(name::String)
 	if(name=="FlowequationIsSSA") return FlowequationIsSSAEnum  end
 	if(name=="FlowequationIsNitsche") return FlowequationIsNitscheEnum  end
 	if(name=="FeFSNitscheGamma") return FeFSNitscheGammaEnum  end
+	if(name=="FrictionAlpha") return FrictionAlphaEnum  end
 	if(name=="FrictionCoupling") return FrictionCouplingEnum  end
 	if(name=="FrictionDelta") return FrictionDeltaEnum  end
 	if(name=="FrictionDNN") return FrictionDNNEnum  end
@@ -8013,6 +8028,7 @@ function StringToEnum(name::String)
 	if(name=="FrictionEffectivePressureLimit") return FrictionEffectivePressureLimitEnum  end
 	if(name=="FrictionF") return FrictionFEnum  end
 	if(name=="FrictionGamma") return FrictionGammaEnum  end
+	if(name=="FrictionLambda") return FrictionLambdaEnum  end
 	if(name=="FrictionLaw") return FrictionLawEnum  end
 	if(name=="FrictionLinearize") return FrictionLinearizeEnum  end
 	if(name=="FrictionMaxCoefficient") return FrictionMaxCoefficientEnum  end
@@ -8020,6 +8036,7 @@ function StringToEnum(name::String)
 	if(name=="FrictionU0") return FrictionU0Enum  end
 	if(name=="FrictionThresholdSpeed") return FrictionThresholdSpeedEnum  end
 	if(name=="FrictionVoidRatio") return FrictionVoidRatioEnum  end
+	if(name=="FrictionZeta") return FrictionZetaEnum  end
 	if(name=="FrontalForcingsBasinIcefrontArea") return FrontalForcingsBasinIcefrontAreaEnum  end
 	if(name=="FrontalForcingsARMATimestep") return FrontalForcingsARMATimestepEnum  end
 	if(name=="FrontalForcingsARMAarOrder") return FrontalForcingsARMAarOrderEnum  end
@@ -8745,13 +8762,17 @@ function StringToEnum(name::String)
 	if(name=="FrictionCmax") return FrictionCmaxEnum  end
 	if(name=="FrictionCoefficient") return FrictionCoefficientEnum  end
 	if(name=="FrictionCoefficientcoulomb") return FrictionCoefficientcoulombEnum  end
+	if(name=="FrictionBumpHeight") return FrictionBumpHeightEnum  end
+	if(name=="FrictionBumpSpacing") return FrictionBumpSpacingEnum  end
 	if(name=="FrictionEffectivePressure") return FrictionEffectivePressureEnum  end
 	if(name=="FrictionK") return FrictionKEnum  end
 	if(name=="FrictionM") return FrictionMEnum  end
 	if(name=="FrictionP") return FrictionPEnum  end
 	if(name=="FrictionPressureAdjustedTemperature") return FrictionPressureAdjustedTemperatureEnum  end
 	if(name=="FrictionQ") return FrictionQEnum  end
+	if(name=="FrictionRheologyA") return FrictionRheologyAEnum  end
 	if(name=="FrictionSedimentCompressibilityCoefficient") return FrictionSedimentCompressibilityCoefficientEnum  end
+	if(name=="FrictionSheetThickness") return FrictionSheetThicknessEnum  end
 	if(name=="FrictionTillFrictionAngle") return FrictionTillFrictionAngleEnum  end
 	if(name=="FrictionWaterLayer") return FrictionWaterLayerEnum  end
 	if(name=="FrictionWaterPressure") return FrictionWaterPressureEnum  end

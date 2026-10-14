@@ -424,6 +424,7 @@ def _instantiate_subclass(md, gname: str, ct: str, verbose: bool):  # {{{
             'frictionregcoulomb', 'frictionregcoulomb2', 'frictionschoof',
             'frictionshakti', 'frictiontsai', 'frictionwaterlayer',
             'frictionweertman', 'frictionweertmantemp',
+            'frictionhydrologyschoof', 'frictionlincomb',
         ]
         if ct in known:
             mod = __import__(ct, fromlist=[ct])
