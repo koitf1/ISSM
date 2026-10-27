@@ -1058,9 +1058,6 @@ void           StressbalanceAnalysis::Core(FemModel* femmodel){/*{{{*/
 	}
 
 }/*}}}*/
-void           StressbalanceAnalysis::PreCore(FemModel* femmodel){/*{{{*/
-	_error_("not implemented");
-}/*}}}*/
 ElementVector* StressbalanceAnalysis::CreateDVector(Element* element){/*{{{*/
 
 	int approximation;
@@ -1953,7 +1950,6 @@ ElementVector* StressbalanceAnalysis::CreatePVectorSSAFront(Element* element){/*
 	IssmDouble  surface_under_water,base_under_water,pressure;
 	int         solution_type;
 	bool        ismasstransport=false,ismovingfront=false;
-	int         calvinglaw=DefaultCalvingEnum;
 	IssmDouble  gllevelset,grounded,hydrostatic_factor,theta=0.,theta2=0.,dt=0.;
 	IssmDouble *xyz_list = NULL;
 	IssmDouble *xyz_list_front = NULL;
@@ -1998,7 +1994,6 @@ ElementVector* StressbalanceAnalysis::CreatePVectorSSAFront(Element* element){/*
 	if(use_calvingfront_coupling){
 		dbasis = xNew<IssmDouble>(dim*numnodes);
 		element->FindParam(&dt,TimesteppingTimeStepEnum);
-		element->FindParam(&calvinglaw,CalvingLawEnum);
 		calvingrate_input  = element->GetInput(CalvingCalvingrateEnum);
 		calvingratex_input = element->GetInput(CalvingratexEnum);
 		if(dim==2) calvingratey_input = element->GetInput(CalvingrateyEnum);
@@ -2063,10 +2058,6 @@ ElementVector* StressbalanceAnalysis::CreatePVectorSSAFront(Element* element){/*
 				if(dim==2 && calvingratey_input) calvingratey_input->GetInputValue(&cy,gauss);
 				calvingrate=cx*normal[0];
 				if(dim==2) calvingrate+=cy*normal[1];
-			}
-			else if(!(calvinglaw==CalvingMinthicknessEnum || calvinglaw==CalvingHabEnum ||
-			          calvinglaw==CalvingCrevasseDepthEnum || calvinglaw==CalvingStochasticEnum)){
-				_error_("theta2 calving-front stabilization requires c_k to be available before the stressbalance solve");
 			}
 
 			IssmDouble arate=calvingrate+meltingrate;
@@ -3617,7 +3608,7 @@ void           StressbalanceAnalysis::GetSolutionFromInputsMOLHO(Vector<IssmDoub
 	if(approximation!=MOLHOApproximationEnum) _error_("mesh "<<EnumToStringx(approximation)<<" not supported here");
 
 	/*Fetch dof list and allocate solution vector*/
-	element->GetDofList(&doflist,approximation,GsetEnum); 
+	element->GetDofList(&doflist,approximation,GsetEnum,true); 
 	IssmDouble* values = xNew<IssmDouble>(numdof);
 
 	/*Get inputs*/
